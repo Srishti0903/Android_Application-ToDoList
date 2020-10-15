@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_profile"
+        android:icon="@drawable/ic_profile"
+        android:title="Profile"/>
+
+    <item android:id="@+id/menu_mode"
+        android:icon="@drawable/ic_mode"
+        android:title="Switch Mode"/>
+
+    <item android:id="@+id/menu_alarm"
+        android:icon="@drawable/ic_alarm"
+        android:title="Alarm and Notification"/>
+
+    <item android:id="@+id/menu_pasttodo"
+        android:icon="@drawable/ic_pasttodo"
+        android:title="Past To Do"/>
+
+    <item android:id="@+id/menu_settings"
+        android:icon="@drawable/ic_setting"
+        android:title="Setting"/>
+
+</menu>

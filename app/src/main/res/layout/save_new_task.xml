@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="Save it!"
+        android:background="@color/teal"
+        android:textSize="25sp"
+        android:gravity="center"
+        />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Create your task"
+        android:id="@+id/savenewTaskText"
+        android:layout_marginTop="10dp"
+        android:textSize="20sp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/savedateInput"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Date"
+            android:layout_marginTop="10dp"
+            android:textSize="20sp"/>
+
+        <EditText
+            android:id="@+id/savetimeInput"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Time"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="10dp"
+            android:textSize="20sp"/>
+
+        <Switch
+            android:id="@+id/savealarmToggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="150dp"/>
+
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/savenewTaskButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:textColor="@color/transparent"
+        android:background="@color/teal"
+        android:layout_marginTop="10dp"
+        android:textSize="20sp"/>
+
+</LinearLayout>

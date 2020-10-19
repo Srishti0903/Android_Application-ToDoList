@@ -2,12 +2,15 @@ package com.example.todoapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import static java.lang.Thread.sleep;
 
 public class SplashActivity extends AppCompatActivity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,8 +21,13 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
                 try {
                     sleep(5000);
-                    Intent intent = new Intent(SplashActivity.this,LoginActivity.class);
-                    startActivity(intent);
+                    Shared shared = new Shared(getApplicationContext());
+
+
+                        Intent intent = new Intent(SplashActivity.this, TaskActivity.class);
+                        startActivity(intent);
+                        finish();
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

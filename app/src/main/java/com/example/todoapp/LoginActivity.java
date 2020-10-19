@@ -2,10 +2,13 @@ package com.example.todoapp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -14,12 +17,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.todoapp.ROOM.MyDatabase;
+import com.example.todoapp.ROOM.Users;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -29,6 +36,8 @@ public class LoginActivity extends AppCompatActivity {
     Button login;
     Button register;
     SharedPreferences sp;
+    SharedPreferences spLog;
+    boolean connected;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +48,8 @@ public class LoginActivity extends AppCompatActivity {
         login=(Button)findViewById(R.id.login);
         register=(Button)findViewById(R.id.register);
         sp = getSharedPreferences("UserData", Context.MODE_PRIVATE);
+        spLog = getSharedPreferences("Login", Context.MODE_PRIVATE);
+        connected = false;
     }
 
     private Boolean validateUserName()
@@ -93,22 +104,22 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void isUser() {
+
         final String userEnteredUsername = user_name.getText().toString().trim();  //srishti
         final String userEnteredPassword = password.getText().toString().trim();
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
+        reference.keepSynced(true);
 
         Query checkUser = reference.orderByChild("username").equalTo(userEnteredUsername);    //yes
         checkUser.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists())
-                {
+                if (snapshot.exists()) {
                     user_name.setError(null);
                     //get fields from database
                     String passwordFromDB = snapshot.child(userEnteredUsername).child("pass").getValue().toString();
-                    if(passwordFromDB.equals(userEnteredPassword))
-                    {
+                    if (passwordFromDB.equals(userEnteredPassword)) {
                         //Toast.makeText(LoginActivity.this, "Yes",Toast.LENGTH_LONG).show();
                         String fullnameFromDB = snapshot.child(userEnteredUsername).child("fullname").getValue().toString();
                         String usernameFromDB = snapshot.child(userEnteredUsername).child("username").getValue().toString();
@@ -118,26 +129,27 @@ public class LoginActivity extends AppCompatActivity {
 
                         //String taskToBeShifted =  model.getTask();
                         //String dateToBeShifted =  model.getDate();
-                       // String timeToBeShifted =  model.getTime();
+                        // String timeToBeShifted =  model.getTime();
 
                         SharedPreferences.Editor editor = sp.edit();
-                        editor.putString("fullnameFromDB",fullnameFromDB);
-                        editor.putString("usernameFromDB",usernameFromDB);
-                        editor.putString("emailFromDB",emailFromDB);
-                        editor.putString("phonenoFromDB",phonenoFromDB);
-                        editor.putString("genderFromDB",genderFromDB);
+                        editor.putString("fullnameFromDB", fullnameFromDB);
+                        editor.putString("usernameFromDB", usernameFromDB);
+                        editor.putString("emailFromDB", emailFromDB);
+                        editor.putString("phonenoFromDB", phonenoFromDB);
+                        editor.putString("genderFromDB", genderFromDB);
                         editor.commit();
+
 
                         Intent intent = new Intent(getApplicationContext(), TaskActivity.class);
                         startActivity(intent);
-                    }
-                    else
-                    {
+                        finish();
+                        Shared shared = new Shared(getApplicationContext());
+                        shared.secondTime();
+                    } else {
                         password.setError("Wrong Password");
                         password.requestFocus();
                     }
-                }
-                else{
+                } else {
                     user_name.setError("No such User");
                     user_name.requestFocus();
                 }
@@ -149,8 +161,8 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
-    }
-}
+    }}
+
 
 
 

@@ -30,17 +30,21 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
 import com.allyants.notifyme.NotifyMe;
 import com.example.todoapp.AlarmReceiver;
 import com.example.todoapp.Model.ToDoModel;
 import com.example.todoapp.PastTaskActivity;
 import com.example.todoapp.R;
+import com.example.todoapp.ROOM.MyDatabase;
+import com.example.todoapp.ROOM.Tasks;
 import com.example.todoapp.TaskActivity;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
@@ -57,6 +61,8 @@ public class MhyAdapter extends FirebaseRecyclerAdapter<ToDoModel,MhyAdapter.myv
     SharedPreferences sp1;
     DatePickerDialog picker;
     TimePickerDialog tpicker;
+    FirebaseDatabase rootNode;
+    DatabaseReference reference;
     private static final String TAG = "Srishti";
     public static final String NOTIFICATION_CHANNEL_ID = "10001" ;
     private final static String default_notification_channel_id = "default" ;
@@ -85,17 +91,41 @@ public class MhyAdapter extends FirebaseRecyclerAdapter<ToDoModel,MhyAdapter.myv
                     String dateToBeShifted =  model.getDate();
                     String timeToBeShifted =  model.getTime();
 
-                    SharedPreferences.Editor editor = sp.edit();
+                    /*SharedPreferences.Editor editor = sp.edit();
                     editor.putString("taskToBeShifted",taskToBeShifted);
                     editor.putString("dateToBeShifted",dateToBeShifted);
                     editor.putString("timeToBeShifted",timeToBeShifted);
-                    editor.commit();
+                    editor.commit(); */
 
                     String user_username = sp1.getString("usernameFromDB", "");
 
                     //remove from here and add to Past Activity
-                    FirebaseDatabase.getInstance().getReference().child("Tasks").child(user_username)
-                            .child(getRef(position).getKey()).removeValue();
+                    rootNode = FirebaseDatabase.getInstance();
+                    reference = rootNode.getReference();
+                    reference.keepSynced(true);
+                    reference.child("Tasks").child(user_username)
+                            .child(Objects.requireNonNull(getRef(holder.getAdapterPosition()).getKey())).removeValue();
+
+                    Map<String,Object> map = new HashMap<>();
+                    map.put("task",taskToBeShifted);
+                    map.put("date",dateToBeShifted);
+                    map.put("time",timeToBeShifted);
+                    map.put("status",0);
+
+                    reference.child("PastTasks").child(user_username).push()
+                            .setValue(map)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                   // Toast.makeText(getApplicationContext(),"Inserted",Toast.LENGTH_LONG).show();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                   // Toast.makeText(getApplicationContext(),"Could not inserted",Toast.LENGTH_LONG).show();
+                                }
+                            });
                 }
             }
         });
@@ -262,10 +292,18 @@ public class MhyAdapter extends FirebaseRecyclerAdapter<ToDoModel,MhyAdapter.myv
                         map.put("time",timeInput.getText().toString());
                         map.put("status",0);
 
+                        //where database of ROOM is updated
+                      /*  MyDatabase myDatabase = Room.databaseBuilder(holder.date.getContext(),MyDatabase.class,"TaskDB")
+                                .allowMainThreadQueries().build();
+                        myDatabase.dao().updateTask(taskText.getText().toString(),dateInput.getText().toString(),timeInput.getText().toString(),0,Integer.parseInt(getRef(position).getKey())); */
+
                         String user_username = sp1.getString("usernameFromDB", "");
 
-                        FirebaseDatabase.getInstance().getReference().child("Tasks").child(user_username)
-                                .child(Objects.requireNonNull(getRef(position).getKey())).updateChildren(map)
+                        rootNode = FirebaseDatabase.getInstance();
+                        reference = rootNode.getReference();
+                        reference.keepSynced(true);
+                        reference.child("Tasks").child(user_username)
+                                .child(Objects.requireNonNull(getRef(holder.getAdapterPosition()).getKey())).updateChildren(map)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
@@ -295,8 +333,19 @@ public class MhyAdapter extends FirebaseRecyclerAdapter<ToDoModel,MhyAdapter.myv
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         String user_username = sp1.getString("usernameFromDB", "");
-                        FirebaseDatabase.getInstance().getReference().child("Tasks").child(user_username).
-                                child(Objects.requireNonNull(getRef(position).getKey())).removeValue();
+
+                        //Delete from ROOM database
+                    /*    MyDatabase myDatabase = Room.databaseBuilder(holder.date.getContext(),MyDatabase.class,"TaskDB")
+                                .allowMainThreadQueries().build();
+                        myDatabase.dao().deleteTask(Integer.parseInt(getRef(position).getKey())); */
+
+
+
+                        rootNode = FirebaseDatabase.getInstance();
+                        reference = rootNode.getReference();
+                        reference.keepSynced(true);
+                        reference.child("Tasks").child(user_username).
+                                child(Objects.requireNonNull(getRef(holder.getAdapterPosition()).getKey())).removeValue();
                     }
                 });
                 builder.setNegativeButton("No", new DialogInterface.OnClickListener() {

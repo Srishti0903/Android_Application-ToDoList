@@ -9,6 +9,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
@@ -34,6 +35,9 @@ import android.widget.Toast;
 import com.example.todoapp.Adapter.MhyAdapter;
 import com.example.todoapp.Model.ToDoModel;
 import com.example.todoapp.Model.UserHelperClass;
+import com.example.todoapp.ROOM.MyDatabase;
+import com.example.todoapp.ROOM.Tasks;
+import com.example.todoapp.ROOM.Users;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -55,6 +59,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.example.todoapp.DayOrNightActivity.MyPREFERENES;
+import static com.example.todoapp.RingtonePlayingService.ACTION_DISMISS;
 
 public class TaskActivity extends AppCompatActivity {
 
@@ -69,10 +74,13 @@ public class TaskActivity extends AppCompatActivity {
     Switch alarmToggle;
     SharedPreferences sp;
     SharedPreferences sp1;
-    UserHelperClass userHelperClass;
+    FirebaseDatabase rootNode;
+    DatabaseReference reference;
     private static final String TAG = "Srishti1";
     public static final String NOTIFICATION_CHANNEL_ID = "10001";
     private final static String default_notification_channel_id = "default";
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,7 +133,7 @@ public class TaskActivity extends AppCompatActivity {
                         drawerLayout.closeDrawer(GravityCompat.START);
                         break;
                     case R.id.menu_settings:
-                        Intent intent5 = new Intent(TaskActivity.this, SettingActivity.class);
+                        Intent intent5 = new Intent(TaskActivity.this, LogOutActivity.class);
                         startActivity(intent5);
                         drawerLayout.closeDrawer(GravityCompat.START);
                         break;
@@ -140,8 +148,11 @@ public class TaskActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         String user_username = sp1.getString("usernameFromDB", "");
+        rootNode = FirebaseDatabase.getInstance();
+        reference = rootNode.getReference();
+        reference.keepSynced(true);
         FirebaseRecyclerOptions<ToDoModel> options = new FirebaseRecyclerOptions.Builder<ToDoModel>()
-                .setQuery(FirebaseDatabase.getInstance().getReference().child("Tasks").child(user_username), ToDoModel.class)
+                .setQuery(reference.child("Tasks").child(user_username), ToDoModel.class)
                 .build();
 
         m = new MhyAdapter(options);
@@ -230,7 +241,17 @@ public class TaskActivity extends AppCompatActivity {
                             map.put("state", model.getState());
 
                             String user_username = sp1.getString("usernameFromDB", "");
-                            FirebaseDatabase.getInstance().getReference().child("Tasks").child(user_username).push()
+
+                          /*  Tasks tasks = new Tasks(taskText.getText().toString(),0,model.getState(),dateInput.getText().toString(),timeInput.getText().toString());
+                            MyDatabase myDatabase = Room.databaseBuilder(TaskActivity.this,MyDatabase.class,"TaskDB")
+                                    .allowMainThreadQueries().build();
+                            myDatabase.dao().addTasks(tasks);  */
+
+
+                            rootNode = FirebaseDatabase.getInstance();
+                            reference = rootNode.getReference();
+                            reference.keepSynced(true);
+                            reference.child("Tasks").child(user_username).push()
                                     .setValue(map)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
@@ -263,7 +284,8 @@ public class TaskActivity extends AppCompatActivity {
                         Intent alarmIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
                         alarmIntent.putExtra(AlarmReceiver.NOTIFICATION_ID, 1);
                         alarmIntent.putExtra(AlarmReceiver.NOTIFICATION, getNotification());
-                        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT | Intent.FILL_IN_DATA);
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
 
                         if (isChecked) {
                             model.setState("SET");
@@ -296,11 +318,13 @@ public class TaskActivity extends AppCompatActivity {
                             editor.putString("dateToBeShifted", dateToBeShifted);
                             editor.putString("timeToBeShifted", timeToBeShifted);
                             editor.commit();
-
-                            alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - 900000, pendingIntent);
-                            alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - 600000, pendingIntent);
-                            alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - 300000, pendingIntent);
-                            alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() , pendingIntent);
+                            if(alm!=null) {
+                                //alm.setExact(AlarmManager.RTC, calendar.getTimeInMillis() - 300000, pendingIntent);
+                                //alm.setExact(AlarmManager.RTC, calendar.getTimeInMillis() - 600000, pendingIntent);
+                                //alm.setExact(AlarmManager.RTC, calendar.getTimeInMillis() - 900000, pendingIntent);
+                                //alm.setExact(AlarmManager.RTC, calendar.getTimeInMillis(), pendingIntent);
+                                alm.setInexactRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis() - 900000,300000,pendingIntent);
+                            }
 
 
                             Toast.makeText(getApplicationContext(), "ALARM ON", Toast.LENGTH_LONG);
@@ -308,16 +332,23 @@ public class TaskActivity extends AppCompatActivity {
 
                         else {
                             model.setState("NOT SET");
+                            alm.cancel(pendingIntent);
                         }
                     }
 
                     private Notification getNotification() {
+                        Intent dismissIntent = new Intent(getApplicationContext(), RingtonePlayingService.class);
+                        dismissIntent.setAction(RingtonePlayingService.ACTION_DISMISS);
+                        PendingIntent pendingDismissIntent = PendingIntent.getService(getApplicationContext(),123,dismissIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+
                         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), default_notification_channel_id);
                         builder.setContentTitle("TO DO");
                         builder.setContentText(model.getTask());
                         builder.setSmallIcon(R.drawable.ic_launcher_foreground);
                         builder.setAutoCancel(true);
+                        builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
                         builder.setChannelId(NOTIFICATION_CHANNEL_ID);
+                        builder.addAction(R.drawable.ic_cancel,"CANCEL",pendingDismissIntent);
                         return builder.build();
                     }
 
@@ -331,6 +362,8 @@ public class TaskActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        Shared shared = new Shared(getApplicationContext());
+        shared.firstTime();
         m.startListening();
     }
 

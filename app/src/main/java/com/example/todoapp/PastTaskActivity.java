@@ -32,6 +32,8 @@ public class PastTaskActivity extends AppCompatActivity {
     ImageView deleteallpasttask;
     SharedPreferences sp;
     SharedPreferences sp1;
+    FirebaseDatabase rootNode;
+    DatabaseReference reference;
 
 
 
@@ -47,8 +49,11 @@ public class PastTaskActivity extends AppCompatActivity {
 
         String user_username = sp1.getString("usernameFromDB", "");
 
+        rootNode = FirebaseDatabase.getInstance();
+        reference = rootNode.getReference();
+        reference.keepSynced(true);
         FirebaseRecyclerOptions<ToDoModel> options = new FirebaseRecyclerOptions.Builder<ToDoModel>()
-                .setQuery(FirebaseDatabase.getInstance().getReference().child("PastTasks").child(user_username), ToDoModel.class)
+                .setQuery(reference.child("PastTasks").child(user_username), ToDoModel.class)
                 .build();
 
         pastAdapter = new PastAdapter(options);
@@ -60,13 +65,13 @@ public class PastTaskActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String user_username = sp1.getString("usernameFromDB", "");
-                FirebaseDatabase.getInstance().getReference().child("PastTasks").child(user_username).removeValue();
+                reference.child("PastTasks").child(user_username).removeValue();
 
             }
         });
 
 
-        Intent intent = getIntent();
+       /* Intent intent = getIntent();
 
         String taskShift = sp.getString("taskToBeShifted","");
         String dateShift = sp.getString("dateToBeShifted","");
@@ -92,7 +97,7 @@ public class PastTaskActivity extends AppCompatActivity {
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(getApplicationContext(),"Could not inserted",Toast.LENGTH_LONG).show();
                     }
-                });
+                }); */
 
     }
 

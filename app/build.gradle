@@ -37,6 +37,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:16.0.4'
     implementation 'com.firebaseui:firebase-ui-database:6.2.1'
     implementation 'com.android.support:design:28.0.0'
+    implementation 'android.arch.persistence.room:runtime:1.1.1'
+    annotationProcessor 'android.arch.persistence.room:compiler:1.1.1'
 
     testImplementation 'junit:junit:4.12'
     implementation 'com.github.jakebonk:NotifyMe:1.0.0'

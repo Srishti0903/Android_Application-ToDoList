@@ -10,8 +10,11 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import com.example.todoapp.Model.UserHelperClass;
+import com.example.todoapp.ROOM.MyDatabase;
+import com.example.todoapp.ROOM.Users;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -205,6 +208,7 @@ public class SignupActivity extends AppCompatActivity {
         {
             rootNode = FirebaseDatabase.getInstance();
             reference = rootNode.getReference("users");
+            reference.keepSynced(true);
 
             String fullname = full_name.getText().toString();
             String username = user_name.getText().toString();
@@ -213,6 +217,15 @@ public class SignupActivity extends AppCompatActivity {
             String pass = password.getText().toString();
             String gender = selectedRadioButton.getText().toString();
 
+
+
+           //Users table in ROOM database
+            Users users = new Users(fullname,username,email,phoneno,pass,gender);
+            MyDatabase myDatabase = Room.databaseBuilder(this,MyDatabase.class,"UserDB")
+                    .allowMainThreadQueries().build();
+            myDatabase.dao().addUsers(users);
+
+            //Firebase data will save
             UserHelperClass helperClass = new UserHelperClass(fullname,username,email,phoneno,pass,gender);
             reference.child(username).setValue(helperClass);
             Toast.makeText(SignupActivity.this, "You are Registered Successfully", Toast.LENGTH_SHORT).show();

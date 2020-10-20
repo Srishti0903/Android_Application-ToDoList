@@ -37,9 +37,7 @@ public class AlertReceiver extends BroadcastReceiver {
             mManager.createNotificationChannel(channel);
 
             Intent i = new Intent(context, RingtonePlayingService.class);
-            i.setAction("ALARM_DISMISS");
-            PendingIntent p = PendingIntent.getService(context, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
-
+            context.startService(i);
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context.getApplicationContext(), channelID)
                     .setSmallIcon(R.drawable.ic_launcher_foreground)
@@ -49,7 +47,11 @@ public class AlertReceiver extends BroadcastReceiver {
                     .setCategory(NotificationCompat.CATEGORY_ALARM);
             builder.setColor(Color.BLUE);
             builder.setAutoCancel(true);
-            builder.addAction(R.drawable.ic_launcher_foreground, "CANCEL", p);
+            Intent dismissIntent = new Intent(context, RingtonePlayingService.class);
+            dismissIntent.setAction(RingtonePlayingService.ACTION_DISMISS);
+            PendingIntent pendingIntent = PendingIntent.getService(context, 123, dismissIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            NotificationCompat.Action action = new NotificationCompat.Action(android.R.drawable.ic_lock_idle_alarm, "CANCEL", pendingIntent);
+            builder.addAction(action);
             mManager.notify(1, builder.build());
         }
 

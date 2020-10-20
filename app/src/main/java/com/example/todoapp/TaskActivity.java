@@ -314,14 +314,11 @@ public class TaskActivity extends AppCompatActivity {
                             editor.putString("timeToBeShifted", timeToBeShifted);
                             editor.commit();
 
-                            if(alm!=null) {
                                 alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - 300000, pendingIntent);
                                 alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - 600000, pendingIntent);
                                 alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - 900000, pendingIntent);
                                 alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
                                // alm.setInexactRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis() - 900000,300000,pendingIntent);
-                            }
-
 
                             Toast.makeText(getApplicationContext(), "ALARM ON", Toast.LENGTH_LONG);
                         }

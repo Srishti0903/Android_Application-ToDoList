@@ -15,9 +15,12 @@ import androidx.annotation.Nullable;
 
 public class RingtonePlayingService extends Service {
 
-    public static final String ACTION_DISMISS = "ACTION_DISMISS";
+   // public static final String ACTION_DISMISS = "ACTION_DISMISS";
+   private static final String URI_BASE = RingtonePlayingService.class.getName() + ".";
+   public static final String ACTION_DISMISS = URI_BASE + "ACTION_DISMISS";
 
-    MediaPlayer myPlayer;
+    private MediaPlayer myPlayer;
+    private Ringtone ringtone;
 
     @Nullable
     @Override
@@ -28,21 +31,28 @@ public class RingtonePlayingService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        if(intent == null) {
+            return START_REDELIVER_INTENT;
+        }
+
+
         myPlayer = MediaPlayer.create(this, Settings.System.DEFAULT_RINGTONE_URI);
         myPlayer.start();
 
         String action = intent.getAction();
 
-        if (ACTION_DISMISS.equals(action)) {
+        if(ACTION_DISMISS.equals(action))
             dismissRingtone();
-        }
 
-        return START_STICKY;
+
+        return START_NOT_STICKY;
     }
 
 
+
     private void dismissRingtone() {
-        stopSelf();
+        Intent i = new Intent(this, RingtonePlayingService.class);
+        stopService(i);
     }
 
     @Override

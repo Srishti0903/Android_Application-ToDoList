@@ -289,12 +289,18 @@ public class TaskActivity extends AppCompatActivity {
                             int dayTobeAlarmed = Integer.parseInt(splitedDate[0]);
                             int monthTobeAlarmed = Integer.parseInt(splitedDate[1]);
                             int yearTobeAlarmed = Integer.parseInt(splitedDate[2]);
+                            Log.d("ALARM",String.valueOf(dayTobeAlarmed));
+                            Log.d("ALARM",String.valueOf(monthTobeAlarmed));
+                            Log.d("ALARM",String.valueOf(yearTobeAlarmed));
+
 
 
                             String timeFormat = model.getTime();
                             String[] splitedTime = timeFormat.split(":");
                             int hourTobeAlarmed = Integer.parseInt(splitedTime[0]);
                             int minuteTobeAlarmed = Integer.parseInt(splitedTime[1]);
+                            Log.d("ALARM",String.valueOf(hourTobeAlarmed));
+                            Log.d("ALARM",String.valueOf(minuteTobeAlarmed));
 
                             Calendar calendar = Calendar.getInstance();
                             calendar.set(Calendar.YEAR, yearTobeAlarmed);
@@ -303,6 +309,13 @@ public class TaskActivity extends AppCompatActivity {
                             calendar.set(Calendar.HOUR_OF_DAY, hourTobeAlarmed);
                             calendar.set(Calendar.MINUTE, minuteTobeAlarmed);
                             calendar.set(Calendar.SECOND, 0);
+                            Log.d("ALARM",String.valueOf(calendar.get(Calendar.YEAR)));
+                            Log.d("ALARM",String.valueOf(calendar.get(Calendar.MONTH)));
+                            Log.d("ALARM",String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
+                            Log.d("ALARM",String.valueOf(calendar.get(Calendar.HOUR_OF_DAY)));
+                            Log.d("ALARM",String.valueOf(calendar.get(Calendar.MINUTE)));
+                            Log.d("ALARM",String.valueOf(calendar.get(Calendar.SECOND)));
+
 
                             String taskToBeShifted = model.getTask();
                             String dateToBeShifted = model.getDate();
@@ -314,11 +327,11 @@ public class TaskActivity extends AppCompatActivity {
                             editor.putString("timeToBeShifted", timeToBeShifted);
                             editor.commit();
 
-                                alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - 300000, pendingIntent);
+                                /*alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - 300000, pendingIntent);
                                 alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - 600000, pendingIntent);
                                 alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - 900000, pendingIntent);
-                                alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-                               // alm.setInexactRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis() - 900000,300000,pendingIntent);
+                                alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent); */
+                               alm.setInexactRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis() - 900000,300000,pendingIntent);
 
                             Toast.makeText(getApplicationContext(), "ALARM ON", Toast.LENGTH_LONG);
                         }

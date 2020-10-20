@@ -255,10 +255,8 @@ public class MhyAdapter extends FirebaseRecyclerAdapter<ToDoModel,MhyAdapter.myv
                             editor.putString("timeToBeShifted",timeToBeShifted);
                             editor.commit();
 
-                            alm.setExact(AlarmManager.RTC_WAKEUP, time - 900000,pendingIntent);
-                            alm.setExact(AlarmManager.RTC_WAKEUP, time - 600000,pendingIntent);
-                            alm.setExact(AlarmManager.RTC_WAKEUP, time - 300000,pendingIntent);
-                            alm.setExact(AlarmManager.RTC_WAKEUP, time,pendingIntent);
+                            alm.setInexactRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis() - 900000,300000,pendingIntent);
+
                             Toast.makeText(holder.date.getContext(),"ALARM ON",Toast.LENGTH_LONG);
                         }
                         else

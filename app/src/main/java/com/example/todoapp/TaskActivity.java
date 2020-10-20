@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -14,6 +15,7 @@ import androidx.room.Room;
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -57,9 +59,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import static com.example.todoapp.DayOrNightActivity.MyPREFERENES;
-import static com.example.todoapp.RingtonePlayingService.ACTION_DISMISS;
 
 public class TaskActivity extends AppCompatActivity {
 
@@ -76,11 +76,9 @@ public class TaskActivity extends AppCompatActivity {
     SharedPreferences sp1;
     FirebaseDatabase rootNode;
     DatabaseReference reference;
-    private static final String TAG = "Srishti1";
-    public static final String NOTIFICATION_CHANNEL_ID = "10001";
-    private final static String default_notification_channel_id = "default";
-
-
+    public static final String channelID = "channelID";
+    public static final String channelName = "Channel Name";
+    private NotificationManager mManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,11 +98,9 @@ public class TaskActivity extends AppCompatActivity {
         sp = getApplicationContext().getSharedPreferences("ShiftedData", Context.MODE_PRIVATE);
         sp1 = getSharedPreferences("UserData", Context.MODE_PRIVATE);
 
-
         toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -227,6 +223,8 @@ public class TaskActivity extends AppCompatActivity {
                 saveText.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+
+
                         if(taskText.getText().toString().isEmpty() | dateInput.getText().toString().isEmpty() | timeInput.getText().toString().isEmpty())
                         {
                             Toast.makeText(getApplicationContext(), "Fields cannot be empty", Toast.LENGTH_SHORT).show();
@@ -280,12 +278,9 @@ public class TaskActivity extends AppCompatActivity {
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
 
-                        AlarmManager alm = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-                        Intent alarmIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
-                        alarmIntent.putExtra(AlarmReceiver.NOTIFICATION_ID, 1);
-                        alarmIntent.putExtra(AlarmReceiver.NOTIFICATION, getNotification());
-                        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
+                        AlarmManager alm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                        Intent intent = new Intent(getApplicationContext(), AlertReceiver.class);
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                         if (isChecked) {
                             model.setState("SET");
@@ -318,12 +313,13 @@ public class TaskActivity extends AppCompatActivity {
                             editor.putString("dateToBeShifted", dateToBeShifted);
                             editor.putString("timeToBeShifted", timeToBeShifted);
                             editor.commit();
+
                             if(alm!=null) {
-                                //alm.setExact(AlarmManager.RTC, calendar.getTimeInMillis() - 300000, pendingIntent);
-                                //alm.setExact(AlarmManager.RTC, calendar.getTimeInMillis() - 600000, pendingIntent);
-                                //alm.setExact(AlarmManager.RTC, calendar.getTimeInMillis() - 900000, pendingIntent);
-                                //alm.setExact(AlarmManager.RTC, calendar.getTimeInMillis(), pendingIntent);
-                                alm.setInexactRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis() - 900000,300000,pendingIntent);
+                                alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - 300000, pendingIntent);
+                                alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - 600000, pendingIntent);
+                                alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - 900000, pendingIntent);
+                                alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+                               // alm.setInexactRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis() - 900000,300000,pendingIntent);
                             }
 
 
@@ -334,22 +330,6 @@ public class TaskActivity extends AppCompatActivity {
                             model.setState("NOT SET");
                             alm.cancel(pendingIntent);
                         }
-                    }
-
-                    private Notification getNotification() {
-                        Intent dismissIntent = new Intent(getApplicationContext(), RingtonePlayingService.class);
-                        dismissIntent.setAction(RingtonePlayingService.ACTION_DISMISS);
-                        PendingIntent pendingDismissIntent = PendingIntent.getService(getApplicationContext(),123,dismissIntent,PendingIntent.FLAG_UPDATE_CURRENT);
-
-                        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), default_notification_channel_id);
-                        builder.setContentTitle("TO DO");
-                        builder.setContentText(model.getTask());
-                        builder.setSmallIcon(R.drawable.ic_launcher_foreground);
-                        builder.setAutoCancel(true);
-                        builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
-                        builder.setChannelId(NOTIFICATION_CHANNEL_ID);
-                        builder.addAction(R.drawable.ic_cancel,"CANCEL",pendingDismissIntent);
-                        return builder.build();
                     }
 
                 });

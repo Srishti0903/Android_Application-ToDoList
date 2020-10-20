@@ -45,7 +45,7 @@ public class CancelAlarmAndNotificationActivity extends AppCompatActivity {
         cancelAlarm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             AlarmManager alm = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-            Intent alarmIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
+            Intent alarmIntent = new Intent(getApplicationContext(), AlertReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, PendingIntent.FLAG_CANCEL_CURRENT);
             String user_username = sp1.getString("usernameFromDB", "");
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Tasks").child(user_username);

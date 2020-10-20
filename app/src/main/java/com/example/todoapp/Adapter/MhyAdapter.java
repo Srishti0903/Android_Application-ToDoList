@@ -33,7 +33,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
 import com.allyants.notifyme.NotifyMe;
-import com.example.todoapp.AlarmReceiver;
+//import com.example.todoapp.AlarmReceiver;
+import com.example.todoapp.AlertReceiver;
 import com.example.todoapp.Model.ToDoModel;
 import com.example.todoapp.PastTaskActivity;
 import com.example.todoapp.R;
@@ -207,11 +208,15 @@ public class MhyAdapter extends FirebaseRecyclerAdapter<ToDoModel,MhyAdapter.myv
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
 
-                        AlarmManager alm = (AlarmManager)holder.date.getContext().getSystemService(Context.ALARM_SERVICE);
+                        /*AlarmManager alm = (AlarmManager)holder.date.getContext().getSystemService(Context.ALARM_SERVICE);
                         Intent alarmIntent = new Intent(holder.date.getContext(), AlarmReceiver.class);
                         alarmIntent.putExtra(AlarmReceiver. NOTIFICATION_ID , 1 ) ;
                         alarmIntent.putExtra(AlarmReceiver. NOTIFICATION , getNotification()) ;
-                        PendingIntent aPendingIntent = PendingIntent.getBroadcast(holder.date.getContext(),0,alarmIntent,PendingIntent. FLAG_UPDATE_CURRENT);
+                        PendingIntent aPendingIntent = PendingIntent.getBroadcast(holder.date.getContext(),0,alarmIntent,PendingIntent. FLAG_UPDATE_CURRENT);*/
+                        AlarmManager alm = (AlarmManager) holder.date.getContext().getSystemService(Context.ALARM_SERVICE);
+                        Intent intent = new Intent(holder.date.getContext().getApplicationContext(), AlertReceiver.class);
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(holder.date.getContext().getApplicationContext(), 1, intent, 0);
+
 
                         if(isChecked)
                         {
@@ -250,16 +255,16 @@ public class MhyAdapter extends FirebaseRecyclerAdapter<ToDoModel,MhyAdapter.myv
                             editor.putString("timeToBeShifted",timeToBeShifted);
                             editor.commit();
 
-                            alm.setExact(AlarmManager.RTC_WAKEUP, time - 900000,aPendingIntent);
-                            alm.setExact(AlarmManager.RTC_WAKEUP, time - 600000,aPendingIntent);
-                            alm.setExact(AlarmManager.RTC_WAKEUP, time - 300000,aPendingIntent);
-                            alm.setExact(AlarmManager.RTC_WAKEUP, time,aPendingIntent);
+                            alm.setExact(AlarmManager.RTC_WAKEUP, time - 900000,pendingIntent);
+                            alm.setExact(AlarmManager.RTC_WAKEUP, time - 600000,pendingIntent);
+                            alm.setExact(AlarmManager.RTC_WAKEUP, time - 300000,pendingIntent);
+                            alm.setExact(AlarmManager.RTC_WAKEUP, time,pendingIntent);
                             Toast.makeText(holder.date.getContext(),"ALARM ON",Toast.LENGTH_LONG);
                         }
                         else
                         {
                             model.setState("NOT SET");
-                            alm.cancel(aPendingIntent);
+                            alm.cancel(pendingIntent);
                             Toast.makeText(holder.date.getContext(),"ALARM OFF",Toast.LENGTH_LONG);
                         }
                     }

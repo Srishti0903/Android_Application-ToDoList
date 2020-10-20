@@ -19,6 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Update your task"
+        android:textColor="@color/black"
         android:id="@+id/newTaskText"
         android:layout_marginTop="10dp"
         android:textSize="20sp"/>
@@ -32,6 +33,7 @@
             android:id="@+id/dateInput"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/black"
             android:hint="Date"
             android:layout_marginTop="10dp"
             android:textSize="20sp"/>
@@ -41,6 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="Time"
+            android:textColor="@color/black"
             android:layout_marginLeft="50dp"
             android:layout_marginTop="10dp"
             android:textSize="20sp"/>
@@ -49,6 +52,7 @@
             android:id="@+id/alarmToggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/black"
             android:layout_marginLeft="150dp"/>
 
     </LinearLayout>

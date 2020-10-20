@@ -18,17 +18,20 @@ import android.provider.Settings;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
+import com.example.todoapp.Model.ToDoModel;
+
 import static android.provider.Settings.System.DEFAULT_RINGTONE_URI;
 
 public class AlertReceiver extends BroadcastReceiver {
     public static final String channelID = "channelID";
     public static final String channelName = "Channel Name";
     private NotificationManager mManager;
+    ToDoModel model;
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
-
+        model = new ToDoModel();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(channelID, channelName, NotificationManager.IMPORTANCE_HIGH);
             if (mManager == null) {
@@ -50,9 +53,15 @@ public class AlertReceiver extends BroadcastReceiver {
             Intent dismissIntent = new Intent(context, RingtonePlayingService.class);
             dismissIntent.setAction(RingtonePlayingService.ACTION_DISMISS);
             PendingIntent pendingIntent = PendingIntent.getService(context, 123, dismissIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            Intent intent1 = new Intent(context, TaskActivity.class);
+            PendingIntent pIntent = PendingIntent.getActivity(context, 123, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
+            builder.setContentIntent(pIntent);
+
             NotificationCompat.Action action = new NotificationCompat.Action(android.R.drawable.ic_lock_idle_alarm, "CANCEL", pendingIntent);
             builder.addAction(action);
-            mManager.notify(1, builder.build());
+
+            mManager.notify(123, builder.build());
         }
 
 

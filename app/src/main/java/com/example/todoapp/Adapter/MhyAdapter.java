@@ -107,6 +107,11 @@ public class MhyAdapter extends FirebaseRecyclerAdapter<ToDoModel,MhyAdapter.myv
                     reference.child("Tasks").child(user_username)
                             .child(Objects.requireNonNull(getRef(holder.getAdapterPosition()).getKey())).removeValue();
 
+                    AlarmManager alm = (AlarmManager) holder.date.getContext().getSystemService(Context.ALARM_SERVICE);
+                    Intent intent = new Intent(holder.date.getContext().getApplicationContext(), AlertReceiver.class);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(holder.date.getContext().getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    alm.cancel(pendingIntent);
+
                     Map<String,Object> map = new HashMap<>();
                     map.put("task",taskToBeShifted);
                     map.put("date",dateToBeShifted);

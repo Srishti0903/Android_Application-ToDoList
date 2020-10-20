@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.example.todoapp.Model.ToDoModel;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 public class CancelAlarmAndNotificationActivity extends AppCompatActivity {
 
@@ -44,9 +46,10 @@ public class CancelAlarmAndNotificationActivity extends AppCompatActivity {
 
         cancelAlarm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
-            AlarmManager alm = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-            Intent alarmIntent = new Intent(getApplicationContext(), AlertReceiver.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+            AlarmManager alm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            Intent intent = new Intent(getApplicationContext(), AlertReceiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
             String user_username = sp1.getString("usernameFromDB", "");
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Tasks").child(user_username);
 
@@ -57,12 +60,16 @@ public class CancelAlarmAndNotificationActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                                Log.d("HELLU", String.valueOf(ds));
+                                //Log.d("HELLU", String.valueOf(ds));
                                 String state = ds.child("state").getValue(String.class);
-                                Log.d("HELLU", state);
+                                //Log.d("HELLU", state);
                                 if (state.equals("SET")) {
+                                    //Log.d("HELLU", "IF IS WORKING");
                                     model.setState("NOT SET");
+                                    reference.child(Objects.requireNonNull(ds.getKey())).child("state").setValue("NOT SET");
+
                                     alm.cancel(pendingIntent);
+                                    Toast.makeText(getApplicationContext(),"All alarms are cancelled!",Toast.LENGTH_LONG).show();
                                 }
                             }
                         }

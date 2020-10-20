@@ -293,8 +293,6 @@ public class TaskActivity extends AppCompatActivity {
                             Log.d("ALARM",String.valueOf(monthTobeAlarmed));
                             Log.d("ALARM",String.valueOf(yearTobeAlarmed));
 
-
-
                             String timeFormat = model.getTime();
                             String[] splitedTime = timeFormat.split(":");
                             int hourTobeAlarmed = Integer.parseInt(splitedTime[0]);

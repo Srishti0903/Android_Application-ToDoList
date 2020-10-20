@@ -35,14 +35,16 @@ public class RingtonePlayingService extends Service {
             return START_REDELIVER_INTENT;
         }
 
-
-        myPlayer = MediaPlayer.create(this, Settings.System.DEFAULT_RINGTONE_URI);
-        myPlayer.start();
-
         String action = intent.getAction();
 
         if(ACTION_DISMISS.equals(action))
             dismissRingtone();
+
+        else
+        {
+            myPlayer = MediaPlayer.create(this, Settings.System.DEFAULT_RINGTONE_URI);
+            myPlayer.start();
+        }
 
 
         return START_NOT_STICKY;
@@ -53,6 +55,9 @@ public class RingtonePlayingService extends Service {
     private void dismissRingtone() {
         Intent i = new Intent(this, RingtonePlayingService.class);
         stopService(i);
+
+        NotificationManager notificationManager = (NotificationManager)getSystemService(getApplicationContext().NOTIFICATION_SERVICE);
+        notificationManager.cancel(123);
     }
 
     @Override

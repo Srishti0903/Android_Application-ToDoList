@@ -19,6 +19,10 @@ import android.widget.Toast;
 
 import com.example.todoapp.ROOM.MyDatabase;
 import com.example.todoapp.ROOM.Users;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,7 +30,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -38,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
     SharedPreferences sp;
     SharedPreferences spLog;
     boolean connected;
+    FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,6 +91,10 @@ public class LoginActivity extends AppCompatActivity {
 
 
     public void forgotPassword(View view) {
+        Intent i =new Intent(LoginActivity.this,ForgotPasswordActivity.class);
+        i.putExtra("_username",user_name.getText().toString());
+        startActivity(i);
+        finish();
     }
 
     public void btn_signup(View view) {
@@ -118,7 +129,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (snapshot.exists()) {
                     user_name.setError(null);
                     //get fields from database
-                    String passwordFromDB = snapshot.child(userEnteredUsername).child("pass").getValue().toString();
+                    final String passwordFromDB = snapshot.child(userEnteredUsername).child("pass").getValue().toString();
                     if (passwordFromDB.equals(userEnteredPassword)) {
                         //Toast.makeText(LoginActivity.this, "Yes",Toast.LENGTH_LONG).show();
                         String fullnameFromDB = snapshot.child(userEnteredUsername).child("fullname").getValue().toString();
@@ -126,6 +137,20 @@ public class LoginActivity extends AppCompatActivity {
                         String emailFromDB = snapshot.child(userEnteredUsername).child("email").getValue().toString();
                         String phonenoFromDB = snapshot.child(userEnteredUsername).child("phoneno").getValue().toString();
                         String genderFromDB = snapshot.child(userEnteredUsername).child("gender").getValue().toString();
+
+                        mAuth = FirebaseAuth.getInstance();
+                        mAuth.createUserWithEmailAndPassword(emailFromDB,userEnteredPassword)
+                                .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<AuthResult> task) {
+                                        if(task.isSuccessful()){
+                                           // Map<String,Object> map = new HashMap<>();
+                                           // map.put("pass",userEnteredPassword);
+                                           // DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users").updateChildren(map);
+                                        }
+                                        else { }
+                                    }
+                                });
 
                         //String taskToBeShifted =  model.getTask();
                         //String dateToBeShifted =  model.getDate();
@@ -141,6 +166,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
                         Intent intent = new Intent(getApplicationContext(), TaskActivity.class);
+                        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                         finish();
                         Shared shared = new Shared(getApplicationContext());

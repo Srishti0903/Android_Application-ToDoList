@@ -34,9 +34,12 @@ public class LogOutActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 Intent intent = new Intent(LogOutActivity.this,LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
                 Toast.makeText(getApplicationContext(),"Successfully Logged out!", Toast.LENGTH_LONG).show();
+                Shared shared = new Shared(getApplicationContext());
+                shared.firstTime();
             }
         });
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -48,6 +51,7 @@ public class LogOutActivity extends AppCompatActivity {
             }
         });
         builder.show();
+
     }
 
 }

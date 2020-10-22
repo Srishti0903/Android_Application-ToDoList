@@ -37,7 +37,8 @@
             android:textColor="@color/black"
             android:hint="Date"
             android:layout_marginTop="10dp"
-            android:textSize="20sp"/>
+            android:textSize="20sp"
+            android:focusableInTouchMode="false"/>
 
         <EditText
             android:id="@+id/timeInput"
@@ -47,7 +48,8 @@
             android:textColor="@color/black"
             android:layout_marginLeft="50dp"
             android:layout_marginTop="10dp"
-            android:textSize="20sp"/>
+            android:textSize="20sp"
+            android:focusableInTouchMode="false"/>
 
         <Switch
             android:id="@+id/alarmToggle"

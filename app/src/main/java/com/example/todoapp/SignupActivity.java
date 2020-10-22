@@ -1,5 +1,6 @@
 package com.example.todoapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -150,7 +151,7 @@ public class SignupActivity extends AppCompatActivity {
         }
         else if(!e.matches(passwordPattern))
         {
-            password.setError("This Password is not allowed");
+            password.setError("This Password is not allowed. Your Password must be atleast 8 characters long and must contain one uppercase letter, one digit and one special character");
             return false;
         }
         else
@@ -220,15 +221,18 @@ public class SignupActivity extends AppCompatActivity {
 
 
            //Users table in ROOM database
-            Users users = new Users(fullname,username,email,phoneno,pass,gender);
+            /*Users users = new Users(fullname,username,email,phoneno,pass,gender);
             MyDatabase myDatabase = Room.databaseBuilder(this,MyDatabase.class,"UserDB")
                     .allowMainThreadQueries().build();
-            myDatabase.dao().addUsers(users);
+            myDatabase.dao().addUsers(users);*/
 
             //Firebase data will save
             UserHelperClass helperClass = new UserHelperClass(fullname,username,email,phoneno,pass,gender);
             reference.child(username).setValue(helperClass);
             Toast.makeText(SignupActivity.this, "You are Registered Successfully", Toast.LENGTH_SHORT).show();
+            Intent i = new Intent(SignupActivity.this,LoginActivity.class);
+            startActivity(i);
+            finish();
         }
     }
 

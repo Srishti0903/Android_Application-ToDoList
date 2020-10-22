@@ -26,6 +26,7 @@ public class DayOrNightActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences(MyPREFERENES, Context.MODE_PRIVATE);
 
         aSwitch = findViewById(R.id.switch1);
+        aSwitch.setChecked(false);
 
         checkNightModeActivated();
 

@@ -14,6 +14,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".PasswordUpdatedActivity"></activity>
+        <activity android:name=".SetNewPassword" />
+        <activity android:name=".VerifyOTPActivity" />
         <activity android:name=".ForgotPasswordActivity" />
         <activity android:name=".LogOutActivity" />
         <activity android:name=".CancelAlarmAndNotificationActivity" />
@@ -37,7 +40,11 @@
         <receiver
             android:name=".AlertReceiver"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
         <service android:name=".RingtonePlayingService" />
     </application>

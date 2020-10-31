@@ -14,6 +14,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
@@ -39,15 +40,17 @@ public class AlertReceiver extends BroadcastReceiver {
             }
             mManager.createNotificationChannel(channel);
 
+
+
             Intent i = new Intent(context, RingtonePlayingService.class);
             context.startService(i);
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context.getApplicationContext(), channelID)
                     .setSmallIcon(R.drawable.ic_launcher_foreground)
-                    .setContentTitle("TO DO")
-                    .setContentText("Alarm Working")
-                    .setPriority(NotificationCompat.PRIORITY_HIGH)
-                    .setCategory(NotificationCompat.CATEGORY_ALARM);
+                    .setContentTitle("TO DO");
+                    builder.setContentText("task");
+                    builder.setPriority(NotificationCompat.PRIORITY_HIGH);
+                    builder.setCategory(NotificationCompat.CATEGORY_ALARM);
             builder.setColor(Color.BLUE);
             builder.setAutoCancel(true);
             Intent dismissIntent = new Intent(context, RingtonePlayingService.class);

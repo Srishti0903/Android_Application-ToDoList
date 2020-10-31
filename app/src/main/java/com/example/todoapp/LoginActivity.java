@@ -59,6 +59,16 @@ public class LoginActivity extends AppCompatActivity {
         connected = false;
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent i = new Intent(Intent.ACTION_MAIN);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.addCategory(Intent.CATEGORY_HOME);
+        startActivity(i);
+        finish();
+        System.exit(0);
+    }
+
     private Boolean validateUserName()
     {
         String b = user_name.getText().toString();
@@ -138,19 +148,7 @@ public class LoginActivity extends AppCompatActivity {
                         String phonenoFromDB = snapshot.child(userEnteredUsername).child("phoneno").getValue().toString();
                         String genderFromDB = snapshot.child(userEnteredUsername).child("gender").getValue().toString();
 
-                        mAuth = FirebaseAuth.getInstance();
-                        mAuth.createUserWithEmailAndPassword(emailFromDB,userEnteredPassword)
-                                .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<AuthResult> task) {
-                                        if(task.isSuccessful()){
-                                           // Map<String,Object> map = new HashMap<>();
-                                           // map.put("pass",userEnteredPassword);
-                                           // DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users").updateChildren(map);
-                                        }
-                                        else { }
-                                    }
-                                });
+
 
                         //String taskToBeShifted =  model.getTask();
                         //String dateToBeShifted =  model.getDate();
@@ -166,7 +164,6 @@ public class LoginActivity extends AppCompatActivity {
 
 
                         Intent intent = new Intent(getApplicationContext(), TaskActivity.class);
-                        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                         finish();
                         Shared shared = new Shared(getApplicationContext());

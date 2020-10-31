@@ -16,6 +16,8 @@ import com.example.todoapp.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 
+import org.w3c.dom.Text;
+
 public class PastAdapter extends FirebaseRecyclerAdapter<ToDoModel,PastAdapter.MyViewHolder> {
 
     public PastAdapter(@NonNull FirebaseRecyclerOptions<ToDoModel> options) {
@@ -31,7 +33,7 @@ public class PastAdapter extends FirebaseRecyclerAdapter<ToDoModel,PastAdapter.M
     @Override
     public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position, @NonNull ToDoModel ToDomodel) {
         holder.checkbox.setText(ToDomodel.getTask());
-        holder.checkbox.setChecked(toBoolean(ToDomodel.getStatus()));
+        //holder.checkbox.setChecked(toBoolean(ToDomodel.getStatus()));
         holder.date.setText(ToDomodel.getDate());
         holder.time.setText(ToDomodel.getTime());
     }
@@ -44,12 +46,15 @@ public class PastAdapter extends FirebaseRecyclerAdapter<ToDoModel,PastAdapter.M
     class MyViewHolder extends RecyclerView.ViewHolder {
 
         //single row things (from task_layout)
-        CheckBox checkbox;
+        //CheckBox checkbox;
+        TextView checkbox;
         TextView date;
         TextView time;
         MyViewHolder(View view) {
             super(view);
-            checkbox = (CheckBox) view.findViewById(R.id.todocheckbox);
+            //checkbox = (CheckBox) view.findViewById(R.id.todocheckbox);
+            checkbox = (TextView) view.findViewById(R.id.todocheckbox);
+
             date = (TextView) view.findViewById(R.id.dateEdit);
             time = (TextView) view.findViewById(R.id.timeEdit);
         }

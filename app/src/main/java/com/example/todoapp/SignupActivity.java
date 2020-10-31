@@ -16,6 +16,7 @@ import androidx.room.Room;
 import com.example.todoapp.Model.UserHelperClass;
 import com.example.todoapp.ROOM.MyDatabase;
 import com.example.todoapp.ROOM.Users;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -28,6 +29,7 @@ public class SignupActivity extends AppCompatActivity {
     RadioButton selectedRadioButton;
     FirebaseDatabase rootNode;
     DatabaseReference reference;
+    FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -227,8 +229,10 @@ public class SignupActivity extends AppCompatActivity {
             myDatabase.dao().addUsers(users);*/
 
             //Firebase data will save
+            firebaseAuth = FirebaseAuth.getInstance();
             UserHelperClass helperClass = new UserHelperClass(fullname,username,email,phoneno,pass,gender);
             reference.child(username).setValue(helperClass);
+            //reference.child(username).setValue(helperClass);
             Toast.makeText(SignupActivity.this, "You are Registered Successfully", Toast.LENGTH_SHORT).show();
             Intent i = new Intent(SignupActivity.this,LoginActivity.class);
             startActivity(i);

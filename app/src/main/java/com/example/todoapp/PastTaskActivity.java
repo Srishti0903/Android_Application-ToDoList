@@ -69,36 +69,6 @@ public class PastTaskActivity extends AppCompatActivity {
 
             }
         });
-
-
-       /* Intent intent = getIntent();
-
-        String taskShift = sp.getString("taskToBeShifted","");
-        String dateShift = sp.getString("dateToBeShifted","");
-        String timeShift = sp.getString("timeToBeShifted","");
-
-        Map<String,Object> map = new HashMap<>();
-        map.put("task",taskShift);
-        map.put("date",dateShift);
-        map.put("time",timeShift);
-        map.put("status",0);
-
-
-        FirebaseDatabase.getInstance().getReference().child("PastTasks").child(user_username).push()
-                .setValue(map)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(getApplicationContext(),"Inserted",Toast.LENGTH_LONG).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(),"Could not inserted",Toast.LENGTH_LONG).show();
-                    }
-                }); */
-
     }
 
 

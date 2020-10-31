@@ -25,7 +25,6 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
     EditText email_id;
     Button reset_password;
-    FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,14 +38,10 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
     public void passwordReset(View view) {
         final String email= email_id.getText().toString();
-        Log.d("CHECKUSER",email);
         Intent i = getIntent();
+        //user entered during Login
         final String userEnteredUsername = i.getStringExtra("_username");
-        Log.d("CHECKUSER",userEnteredUsername);
-
-        firebaseAuth = FirebaseAuth.getInstance();
-
-
+        Log.d("USERNAME",userEnteredUsername);
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
         reference.keepSynced(true);
         Query checkUser = reference.orderByChild("username").equalTo(userEnteredUsername);
@@ -54,23 +49,40 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String emailFromDB = dataSnapshot.child(userEnteredUsername).child("email").getValue().toString();
+                String phoneFromDB = dataSnapshot.child(userEnteredUsername).child("phoneno").getValue().toString();
+                String phoneFormat = "+91" + phoneFromDB;
+                Log.d("PHONENO", phoneFormat);
+
                 Log.d("CHECKUSER",emailFromDB);
                 if(emailFromDB.equals(email))
                 {
-                    firebaseAuth.sendPasswordResetEmail(email)
+                    Intent intent = new Intent(ForgotPasswordActivity.this,VerifyOTPActivity.class);
+                    intent.putExtra("emailaccessed",email);
+                    intent.putExtra("phoneaccessed",phoneFormat);
+                    intent.putExtra("usernameaccessed",userEnteredUsername);
+                    intent.putExtra("whatToDo","updateData");
+                    startActivity(intent);
+                    finish();
+                    /*firebaseAuth.sendPasswordResetEmail(email)
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if(task.isSuccessful())
                                     {
                                         Toast.makeText(getApplicationContext(),"Password send to your email",Toast.LENGTH_LONG).show();
+
                                     }
                                     else
                                     {
                                         Toast.makeText(getApplicationContext(),task.getException().getMessage(),Toast.LENGTH_LONG).show();
                                     }
                                 }
-                            });
+                            }); */
+                }
+                else
+                {
+                    email_id.setError("No such user exists!");
+                    email_id.requestFocus();
                 }
             }
 

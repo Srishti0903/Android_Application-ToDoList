@@ -148,7 +148,7 @@ public class MhyAdapter extends FirebaseRecyclerAdapter<ToDoModel,MhyAdapter.myv
                 final EditText taskText = myview.findViewById(R.id.newTaskText);
                 final EditText dateInput = myview.findViewById(R.id.dateInput);
                 final EditText timeInput = myview.findViewById(R.id.timeInput);
-                Switch alarmToggle =(Switch)myview.findViewById(R.id.alarmToggle);
+                //Switch alarmToggle =(Switch)myview.findViewById(R.id.alarmToggle);
                 Button saveText = myview.findViewById(R.id.newTaskButton);
                 //Button setAlarm = myview.findViewById(R.id.setAlarm);
 
@@ -205,7 +205,7 @@ public class MhyAdapter extends FirebaseRecyclerAdapter<ToDoModel,MhyAdapter.myv
 
                     }
                 });
-                if(!alarmToggle.isChecked())
+                /*if(!alarmToggle.isChecked())
                 {
                     model.setState("NOT SET");
                 }
@@ -213,11 +213,6 @@ public class MhyAdapter extends FirebaseRecyclerAdapter<ToDoModel,MhyAdapter.myv
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
 
-                        /*AlarmManager alm = (AlarmManager)holder.date.getContext().getSystemService(Context.ALARM_SERVICE);
-                        Intent alarmIntent = new Intent(holder.date.getContext(), AlarmReceiver.class);
-                        alarmIntent.putExtra(AlarmReceiver. NOTIFICATION_ID , 1 ) ;
-                        alarmIntent.putExtra(AlarmReceiver. NOTIFICATION , getNotification()) ;
-                        PendingIntent aPendingIntent = PendingIntent.getBroadcast(holder.date.getContext(),0,alarmIntent,PendingIntent. FLAG_UPDATE_CURRENT);*/
                         AlarmManager alm = (AlarmManager) holder.date.getContext().getSystemService(Context.ALARM_SERVICE);
                         Intent intent = new Intent(holder.date.getContext().getApplicationContext(), AlertReceiver.class);
                         PendingIntent pendingIntent = PendingIntent.getBroadcast(holder.date.getContext().getApplicationContext(), 1, intent, 0);
@@ -281,24 +276,79 @@ public class MhyAdapter extends FirebaseRecyclerAdapter<ToDoModel,MhyAdapter.myv
                         builder.setChannelId( NOTIFICATION_CHANNEL_ID ) ;
                         return builder.build() ;
                     }
-                });
+                }); */
 
                 dialogPlus.show();
 
                 saveText.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+
+
                         if(taskText.getText().toString().isEmpty() | dateInput.getText().toString().isEmpty() | timeInput.getText().toString().isEmpty())
                         {
                             Toast.makeText(holder.date.getContext(), "Fields cannot be empty", Toast.LENGTH_SHORT).show();
                         }
                         else
                         {
-                        Map<String,Object> map = new HashMap<>();
-                        map.put("task",taskText.getText().toString());
-                        map.put("date",dateInput.getText().toString());
-                        map.put("time",timeInput.getText().toString());
-                        map.put("status",0);
+                            AlarmManager alm = (AlarmManager) holder.date.getContext().getSystemService(Context.ALARM_SERVICE);
+                            Intent intent = new Intent(holder.date.getContext().getApplicationContext(), AlertReceiver.class);
+                           // PendingIntent pendingIntent1 = PendingIntent.getBroadcast(holder.date.getContext().getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                            PendingIntent pendingIntent = PendingIntent.getBroadcast(holder.date.getContext().getApplicationContext(), 1, intent, 0);
+                           // alm.cancel(pendingIntent1);
+
+                            String dateFormat = model.getDate();
+                            String [] splitedDate = dateFormat.split("-");
+                            int dayTobeAlarmed = Integer.parseInt(splitedDate[0]);
+                            int monthTobeAlarmed = Integer.parseInt(splitedDate[1]);
+                            int yearTobeAlarmed = Integer.parseInt(splitedDate[2]);
+
+                            String timeFormat = model.getTime();
+                            String [] splitedTime = timeFormat.split(":");
+                            int hourTobeAlarmed = Integer.parseInt(splitedTime[0]);
+                            int minuteTobeAlarmed = Integer.parseInt(splitedTime[1]);
+
+                            Calendar calendar = Calendar.getInstance();
+
+                            calendar.set(Calendar.YEAR,yearTobeAlarmed);
+                            calendar.set(Calendar.MONTH,monthTobeAlarmed - 1);
+                            calendar.set(Calendar.DAY_OF_MONTH,dayTobeAlarmed);
+                            calendar.set(Calendar.HOUR_OF_DAY,hourTobeAlarmed);
+                            calendar.set(Calendar.MINUTE,minuteTobeAlarmed);
+                            calendar.set(Calendar.SECOND,0);
+
+                            Long time = calendar.getTimeInMillis();
+
+                            String taskToBeShifted =  model.getTask();
+                            String dateToBeShifted =  model.getDate();
+                            String timeToBeShifted =  model.getTime();
+
+                            SharedPreferences.Editor editor = sp.edit();
+                            editor.putString("taskToBeShifted",taskToBeShifted);
+                            editor.putString("dateToBeShifted",dateToBeShifted);
+                            editor.putString("timeToBeShifted",timeToBeShifted);
+                            editor.apply();
+
+                            Long timeSetForAlarm = calendar.getTimeInMillis();
+                            Long difference = timeSetForAlarm - System.currentTimeMillis();
+
+                            if(difference < 300000)
+                                alm.setInexactRepeating(AlarmManager.RTC_WAKEUP,timeSetForAlarm,300000,pendingIntent);
+
+                            else if(difference >= 300000 && difference < 600000)
+                                alm.setInexactRepeating(AlarmManager.RTC_WAKEUP,timeSetForAlarm - 900000,300000,pendingIntent);
+
+                            else if (difference >= 600000 && difference < 900000)
+                                alm.setInexactRepeating(AlarmManager.RTC_WAKEUP,timeSetForAlarm - 600000,300000,pendingIntent);
+
+                            else
+                                alm.setInexactRepeating(AlarmManager.RTC_WAKEUP,timeSetForAlarm - 300000,300000,pendingIntent);
+
+                            Map<String,Object> map = new HashMap<>();
+                            map.put("task",taskText.getText().toString());
+                            map.put("date",dateInput.getText().toString());
+                            map.put("time",timeInput.getText().toString());
+                            map.put("status",0);
 
                         //where database of ROOM is updated
                       /*  MyDatabase myDatabase = Room.databaseBuilder(holder.date.getContext(),MyDatabase.class,"TaskDB")
@@ -321,6 +371,7 @@ public class MhyAdapter extends FirebaseRecyclerAdapter<ToDoModel,MhyAdapter.myv
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(holder.date.getContext(), "Could not inserted", Toast.LENGTH_LONG).show();
                                         dialogPlus.dismiss();
                                     }
                                 });
@@ -340,20 +391,25 @@ public class MhyAdapter extends FirebaseRecyclerAdapter<ToDoModel,MhyAdapter.myv
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+
+                        AlarmManager alm = (AlarmManager) holder.date.getContext().getSystemService(Context.ALARM_SERVICE);
+                        Intent intent = new Intent(holder.date.getContext().getApplicationContext(), AlertReceiver.class);
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(holder.date.getContext().getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                        alm.cancel(pendingIntent);
+
                         String user_username = sp1.getString("usernameFromDB", "");
 
                         //Delete from ROOM database
                     /*    MyDatabase myDatabase = Room.databaseBuilder(holder.date.getContext(),MyDatabase.class,"TaskDB")
                                 .allowMainThreadQueries().build();
                         myDatabase.dao().deleteTask(Integer.parseInt(getRef(position).getKey())); */
-
-
-
                         rootNode = FirebaseDatabase.getInstance();
                         reference = rootNode.getReference();
                         reference.keepSynced(true);
                         reference.child("Tasks").child(user_username).
                                 child(Objects.requireNonNull(getRef(holder.getAdapterPosition()).getKey())).removeValue();
+
+
                     }
                 });
                 builder.setNegativeButton("No", new DialogInterface.OnClickListener() {

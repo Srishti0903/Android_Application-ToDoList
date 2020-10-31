@@ -44,11 +44,11 @@ public class ProfileActivity extends AppCompatActivity {
         String user_gender = sp.getString("genderFromDB","");
 
 
-        fullname.setText(user_fullname);
-        username.setText(user_username);
-        email.setText(user_email);
-        phoneno.setText(user_phoneno);
-        gender.setText(user_gender);
+        fullname.setText("Name :" + " " + user_fullname);
+        username.setText("Username :" + " " + user_username);
+        email.setText("Email :" + " " + user_email);
+        phoneno.setText("Phone No :" + " " + user_phoneno);
+        gender.setText("Gender :" + " " + user_gender);
 
     }
 }

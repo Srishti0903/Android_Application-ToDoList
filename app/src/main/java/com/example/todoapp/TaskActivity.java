@@ -1,21 +1,15 @@
 package com.example.todoapp;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
-
-import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
@@ -24,11 +18,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Switch;
@@ -72,7 +64,7 @@ public class TaskActivity extends AppCompatActivity {
     ActionBarDrawerToggle toggle;
     DrawerLayout drawerLayout;
     androidx.appcompat.widget.Toolbar toolbar;
-    Switch alarmToggle;
+    //Switch alarmToggle;
     SharedPreferences sp;
     SharedPreferences sp1;
     FirebaseDatabase rootNode;
@@ -80,6 +72,7 @@ public class TaskActivity extends AppCompatActivity {
     public static final String channelID = "channelID";
     public static final String channelName = "Channel Name";
     private NotificationManager mManager;
+    SharedPreferences sharedPreferenceForLogout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +88,7 @@ public class TaskActivity extends AppCompatActivity {
 
         navigationView = (NavigationView) findViewById(R.id.navmenu);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
-        alarmToggle = (Switch) findViewById(R.id.alarmToggle);
+        //alarmToggle = (Switch) findViewById(R.id.alarmToggle);
         sp = getApplicationContext().getSharedPreferences("ShiftedData", Context.MODE_PRIVATE);
         sp1 = getSharedPreferences("UserData", Context.MODE_PRIVATE);
 
@@ -160,7 +153,7 @@ public class TaskActivity extends AppCompatActivity {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DialogPlus dialogPlus = DialogPlus.newDialog(TaskActivity.this)
+                final DialogPlus dialogPlus = DialogPlus.newDialog(TaskActivity.this)
                         .setContentHolder(new ViewHolder(R.layout.save_new_task))
                         .setExpanded(true, 600)
                         .create();
@@ -170,7 +163,7 @@ public class TaskActivity extends AppCompatActivity {
                 final EditText dateInput = myview.findViewById(R.id.savedateInput);
                 final EditText timeInput = myview.findViewById(R.id.savetimeInput);
                 Button saveText = myview.findViewById(R.id.savenewTaskButton);
-                final Switch alarmToggle = (Switch) myview.findViewById(R.id.savealarmToggle);
+                //final Switch alarmToggle = (Switch) myview.findViewById(R.id.savealarmToggle);
 
                 dateInput.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -217,8 +210,6 @@ public class TaskActivity extends AppCompatActivity {
                         tpicker.show();
                     }
                 });
-
-
                 dialogPlus.show();
 
                 saveText.setOnClickListener(new View.OnClickListener() {
@@ -232,12 +223,70 @@ public class TaskActivity extends AppCompatActivity {
                         }
 
                         else {
+                            model.setTask(taskText.getText().toString());
+                            AlarmManager alm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                            Intent intent = new Intent(getApplicationContext(), AlertReceiver.class);
+                            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                            String dateFormat = model.getDate();
+                            String[] splitedDate = dateFormat.split("-");
+                            int dayTobeAlarmed = Integer.parseInt(splitedDate[0]);
+                            int monthTobeAlarmed = Integer.parseInt(splitedDate[1]);
+                            int yearTobeAlarmed = Integer.parseInt(splitedDate[2]);
+
+                            String timeFormat = model.getTime();
+                            String[] splitedTime = timeFormat.split(":");
+                            int hourTobeAlarmed = Integer.parseInt(splitedTime[0]);
+                            int minuteTobeAlarmed = Integer.parseInt(splitedTime[1]);
+
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.set(Calendar.YEAR, yearTobeAlarmed);
+                            calendar.set(Calendar.MONTH, monthTobeAlarmed - 1);
+                            calendar.set(Calendar.DAY_OF_MONTH, dayTobeAlarmed);
+                            calendar.set(Calendar.HOUR_OF_DAY, hourTobeAlarmed);
+                            calendar.set(Calendar.MINUTE, minuteTobeAlarmed);
+                            calendar.set(Calendar.SECOND, 0);
+
+                            String taskToBeShifted = model.getTask();
+                            String dateToBeShifted = model.getDate();
+                            String timeToBeShifted = model.getTime();
+
+                            SharedPreferences.Editor editor = sp.edit();
+                            editor.putString("taskToBeShifted", taskToBeShifted);
+                            editor.putString("dateToBeShifted", dateToBeShifted);
+                            editor.putString("timeToBeShifted", timeToBeShifted);
+                            editor.apply();
+                            Long timeSetForAlarm = calendar.getTimeInMillis();
+                            Long difference = timeSetForAlarm - System.currentTimeMillis();
+
+                            Log.d("A",String.valueOf(System.currentTimeMillis()));
+
+                            if(difference < 300000) {
+                                Log.d("A", "1");
+                                alm.setInexactRepeating(AlarmManager.RTC_WAKEUP, timeSetForAlarm, 300000, pendingIntent);
+                            }
+
+                            else if(difference >= 300000 && difference < 600000) {
+                                Log.d("A", "2");
+                                alm.setInexactRepeating(AlarmManager.RTC_WAKEUP, timeSetForAlarm - 900000, 300000, pendingIntent);
+                            }
+
+                            else if (difference >= 600000 && difference < 900000) {
+                                Log.d("A", "3");
+                                alm.setInexactRepeating(AlarmManager.RTC_WAKEUP, timeSetForAlarm - 600000, 300000, pendingIntent);
+                            }
+
+                            else {
+                                Log.d("A", "4");
+                                alm.setInexactRepeating(AlarmManager.RTC_WAKEUP, timeSetForAlarm - 300000, 300000, pendingIntent);
+                                 }
+
                             Map<String, Object> map = new HashMap<>();
                             map.put("task", taskText.getText().toString());
                             map.put("date", dateInput.getText().toString());
                             map.put("time", timeInput.getText().toString());
                             map.put("status", 0);
-                            map.put("state", model.getState());
+                            //map.put("state", model.getState());
 
                             String user_username = sp1.getString("usernameFromDB", "");
 
@@ -258,12 +307,14 @@ public class TaskActivity extends AppCompatActivity {
                                             taskText.setText("");
                                             dateInput.setText("");
                                             timeInput.setText("");
+                                            dialogPlus.dismiss();
                                         }
                                     })
                                     .addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
                                             Toast.makeText(getApplicationContext(), "Could not inserted", Toast.LENGTH_LONG).show();
+                                            dialogPlus.dismiss();
                                         }
                                     });
                         }
@@ -271,83 +322,16 @@ public class TaskActivity extends AppCompatActivity {
                     }
 
                 });
-                if(!alarmToggle.isChecked())
-                {
-                    model.setState("NOT SET");
-                }
-                alarmToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-
-                        AlarmManager alm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                        Intent intent = new Intent(getApplicationContext(), AlertReceiver.class);
-                        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                        if (isChecked) {
-                            model.setState("SET");
-                            String dateFormat = model.getDate();
-                            String[] splitedDate = dateFormat.split("-");
-                            int dayTobeAlarmed = Integer.parseInt(splitedDate[0]);
-                            int monthTobeAlarmed = Integer.parseInt(splitedDate[1]);
-                            int yearTobeAlarmed = Integer.parseInt(splitedDate[2]);
-                            Log.d("ALARM",String.valueOf(dayTobeAlarmed));
-                            Log.d("ALARM",String.valueOf(monthTobeAlarmed));
-                            Log.d("ALARM",String.valueOf(yearTobeAlarmed));
-
-                            String timeFormat = model.getTime();
-                            String[] splitedTime = timeFormat.split(":");
-                            int hourTobeAlarmed = Integer.parseInt(splitedTime[0]);
-                            int minuteTobeAlarmed = Integer.parseInt(splitedTime[1]);
-                            Log.d("ALARM",String.valueOf(hourTobeAlarmed));
-                            Log.d("ALARM",String.valueOf(minuteTobeAlarmed));
-
-                            Calendar calendar = Calendar.getInstance();
-                            calendar.set(Calendar.YEAR, yearTobeAlarmed);
-                            calendar.set(Calendar.MONTH, monthTobeAlarmed - 1);
-                            calendar.set(Calendar.DAY_OF_MONTH, dayTobeAlarmed);
-                            calendar.set(Calendar.HOUR_OF_DAY, hourTobeAlarmed);
-                            calendar.set(Calendar.MINUTE, minuteTobeAlarmed);
-                            calendar.set(Calendar.SECOND, 0);
-                            Log.d("ALARM",String.valueOf(calendar.get(Calendar.YEAR)));
-                            Log.d("ALARM",String.valueOf(calendar.get(Calendar.MONTH)));
-                            Log.d("ALARM",String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
-                            Log.d("ALARM",String.valueOf(calendar.get(Calendar.HOUR_OF_DAY)));
-                            Log.d("ALARM",String.valueOf(calendar.get(Calendar.MINUTE)));
-                            Log.d("ALARM",String.valueOf(calendar.get(Calendar.SECOND)));
-
-
-                            String taskToBeShifted = model.getTask();
-                            String dateToBeShifted = model.getDate();
-                            String timeToBeShifted = model.getTime();
-
-                            SharedPreferences.Editor editor = sp.edit();
-                            editor.putString("taskToBeShifted", taskToBeShifted);
-                            editor.putString("dateToBeShifted", dateToBeShifted);
-                            editor.putString("timeToBeShifted", timeToBeShifted);
-                            editor.commit();
-
-                                /*alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - 300000, pendingIntent);
-                                alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - 600000, pendingIntent);
-                                alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - 900000, pendingIntent);
-                                alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent); */
-                               alm.setInexactRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis() - 900000,300000,pendingIntent);
-
-                            Toast.makeText(getApplicationContext(), "ALARM ON", Toast.LENGTH_LONG);
-                        }
-
-                        else {
-                            model.setState("NOT SET");
-                            alm.cancel(pendingIntent);
-                        }
-                    }
-
-                });
+                /*alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - 300000, pendingIntent);
+                 alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - 600000, pendingIntent);
+                 alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - 900000, pendingIntent);
+                 alm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent); */
+                /*alm.setInexactRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis() - 900000,300000,pendingIntent);*/
 
             }
         });
 
     }
-
     @Override
     protected void onStart() {
         super.onStart();

@@ -51,12 +51,12 @@
             android:textSize="20sp"
             android:focusableInTouchMode="false"/>
 
-        <Switch
+        <!-- <Switch
             android:id="@+id/alarmToggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
-            android:layout_marginLeft="150dp"/>
+            android:layout_marginLeft="150dp"/> -->
 
     </LinearLayout>
 

@@ -3,8 +3,10 @@ package com.example.todoapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -15,17 +17,22 @@ import java.util.Objects;
 
 public class LogOutActivity extends AppCompatActivity {
 
+    SharedPreferences sharedPreferenceForLogout;
+
     @Override
     protected void onStart() {
         super.onStart();
-        Shared shared = new Shared(getApplicationContext());
-        shared.firstTime();
+       // Shared shared = new Shared(getApplicationContext());
+       // shared.firstTime();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_out);
+
+        Shared shared = new Shared(getApplicationContext());
+        shared.logoutTime();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(LogOutActivity.this);
         builder.setTitle("Exit");
@@ -38,8 +45,6 @@ public class LogOutActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
                 Toast.makeText(getApplicationContext(),"Successfully Logged out!", Toast.LENGTH_LONG).show();
-                Shared shared = new Shared(getApplicationContext());
-                shared.firstTime();
             }
         });
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -51,6 +56,10 @@ public class LogOutActivity extends AppCompatActivity {
             }
         });
         builder.show();
+
+
+
+
 
     }
 

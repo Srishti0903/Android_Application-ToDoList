@@ -25,6 +25,12 @@ public class Shared {
         editor.commit();
     }
 
+    public void logoutTime()
+    {
+        editor.putBoolean(data,false);
+        editor.commit();
+    }
+
     public void firstTime()
     {
         if(!this.login())
@@ -37,7 +43,7 @@ public class Shared {
         }
     }
 
-    private boolean login() {
+    public boolean login() {
         return sharedPreferences.getBoolean(data,false);
     }
 }

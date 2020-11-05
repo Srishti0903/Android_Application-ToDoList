@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
@@ -20,6 +21,8 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import com.example.todoapp.Model.ToDoModel;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import static android.provider.Settings.System.DEFAULT_RINGTONE_URI;
 
@@ -28,6 +31,9 @@ public class AlertReceiver extends BroadcastReceiver {
     public static final String channelName = "Channel Name";
     private NotificationManager mManager;
     ToDoModel model;
+    FirebaseDatabase rootNode;
+    DatabaseReference reference;
+
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -45,10 +51,13 @@ public class AlertReceiver extends BroadcastReceiver {
             Intent i = new Intent(context, RingtonePlayingService.class);
             context.startService(i);
 
+            SharedPreferences sp3 = context.getSharedPreferences("ShiftedData", Context.MODE_PRIVATE);
+            String task = sp3.getString("taskToBeShifted","");
+
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context.getApplicationContext(), channelID)
                     .setSmallIcon(R.drawable.ic_launcher_foreground)
                     .setContentTitle("TO DO");
-                    builder.setContentText("task");
+                    builder.setContentText(task);
                     builder.setPriority(NotificationCompat.PRIORITY_HIGH);
                     builder.setCategory(NotificationCompat.CATEGORY_ALARM);
             builder.setColor(Color.BLUE);

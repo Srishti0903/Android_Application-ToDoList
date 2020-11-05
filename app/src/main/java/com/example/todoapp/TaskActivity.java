@@ -71,6 +71,7 @@ public class TaskActivity extends AppCompatActivity {
     DatabaseReference reference;
     public static final String channelID = "channelID";
     public static final String channelName = "Channel Name";
+    public static final String TAG = "TIME";
     private NotificationManager mManager;
     SharedPreferences sharedPreferenceForLogout;
 
@@ -215,8 +216,6 @@ public class TaskActivity extends AppCompatActivity {
                 saveText.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
-
                         if(taskText.getText().toString().isEmpty() | dateInput.getText().toString().isEmpty() | timeInput.getText().toString().isEmpty())
                         {
                             Toast.makeText(getApplicationContext(), "Fields cannot be empty", Toast.LENGTH_SHORT).show();
@@ -259,26 +258,26 @@ public class TaskActivity extends AppCompatActivity {
                             Long timeSetForAlarm = calendar.getTimeInMillis();
                             Long difference = timeSetForAlarm - System.currentTimeMillis();
 
-                            Log.d("A",String.valueOf(System.currentTimeMillis()));
+                            Log.d(TAG,String.valueOf(System.currentTimeMillis()));
 
                             if(difference < 300000) {
-                                Log.d("A", "1");
+                                Log.d(TAG, "1");
                                 alm.setInexactRepeating(AlarmManager.RTC_WAKEUP, timeSetForAlarm, 300000, pendingIntent);
                             }
 
                             else if(difference >= 300000 && difference < 600000) {
-                                Log.d("A", "2");
-                                alm.setInexactRepeating(AlarmManager.RTC_WAKEUP, timeSetForAlarm - 900000, 300000, pendingIntent);
+                                Log.d(TAG, "2");
+                                alm.setInexactRepeating(AlarmManager.RTC_WAKEUP, timeSetForAlarm - 300000, 300000, pendingIntent);
                             }
 
                             else if (difference >= 600000 && difference < 900000) {
-                                Log.d("A", "3");
+                                Log.d(TAG, "3");
                                 alm.setInexactRepeating(AlarmManager.RTC_WAKEUP, timeSetForAlarm - 600000, 300000, pendingIntent);
                             }
 
                             else {
-                                Log.d("A", "4");
-                                alm.setInexactRepeating(AlarmManager.RTC_WAKEUP, timeSetForAlarm - 300000, 300000, pendingIntent);
+                                Log.d(TAG, "4");
+                                alm.setInexactRepeating(AlarmManager.RTC_WAKEUP, timeSetForAlarm - 900000, 300000, pendingIntent);
                                  }
 
                             Map<String, Object> map = new HashMap<>();

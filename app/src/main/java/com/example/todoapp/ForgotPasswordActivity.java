@@ -56,6 +56,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                 Log.d("CHECKUSER",emailFromDB);
                 if(emailFromDB.equals(email))
                 {
+                    Toast.makeText(getApplicationContext(),"It will send One Time Password to your mobile linked with this email",Toast.LENGTH_LONG);
                     Intent intent = new Intent(ForgotPasswordActivity.this,VerifyOTPActivity.class);
                     intent.putExtra("emailaccessed",email);
                     intent.putExtra("phoneaccessed",phoneFormat);
@@ -63,6 +64,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                     intent.putExtra("whatToDo","updateData");
                     startActivity(intent);
                     finish();
+
                     /*firebaseAuth.sendPasswordResetEmail(email)
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override

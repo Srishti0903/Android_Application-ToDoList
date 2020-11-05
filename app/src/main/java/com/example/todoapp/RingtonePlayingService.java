@@ -50,8 +50,6 @@ public class RingtonePlayingService extends Service {
         return START_NOT_STICKY;
     }
 
-
-
     private void dismissRingtone() {
         Intent i = new Intent(this, RingtonePlayingService.class);
         stopService(i);

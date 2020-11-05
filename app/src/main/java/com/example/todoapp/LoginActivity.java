@@ -74,7 +74,8 @@ public class LoginActivity extends AppCompatActivity {
         String b = user_name.getText().toString();
         if(b.isEmpty())
         {
-            user_name.setError("Field cannot be empty");
+            login.setEnabled(false);
+            //user_name.setError("Field cannot be empty");
             return false;
         }
         else
@@ -89,7 +90,8 @@ public class LoginActivity extends AppCompatActivity {
         String e = password.getText().toString();
         if(e.isEmpty())
         {
-            password.setError("Field cannot be empty");
+            login.setEnabled(false);
+            //password.setError("Field cannot be empty");
             return false;
         }
         else
@@ -116,6 +118,7 @@ public class LoginActivity extends AppCompatActivity {
     public void login_user(View view) {
         if(!validateUserName() | !validatePassword())
         {
+            login.setEnabled(true);
             return;
         }
         else
@@ -125,6 +128,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void isUser() {
+
+
 
         final String userEnteredUsername = user_name.getText().toString().trim();  //srishti
         final String userEnteredPassword = password.getText().toString().trim();

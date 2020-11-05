@@ -336,13 +336,13 @@ public class MhyAdapter extends FirebaseRecyclerAdapter<ToDoModel,MhyAdapter.myv
                                 alm.setInexactRepeating(AlarmManager.RTC_WAKEUP,timeSetForAlarm,300000,pendingIntent);
 
                             else if(difference >= 300000 && difference < 600000)
-                                alm.setInexactRepeating(AlarmManager.RTC_WAKEUP,timeSetForAlarm - 900000,300000,pendingIntent);
+                                alm.setInexactRepeating(AlarmManager.RTC_WAKEUP,timeSetForAlarm - 300000,300000,pendingIntent);
 
                             else if (difference >= 600000 && difference < 900000)
                                 alm.setInexactRepeating(AlarmManager.RTC_WAKEUP,timeSetForAlarm - 600000,300000,pendingIntent);
 
                             else
-                                alm.setInexactRepeating(AlarmManager.RTC_WAKEUP,timeSetForAlarm - 300000,300000,pendingIntent);
+                                alm.setInexactRepeating(AlarmManager.RTC_WAKEUP,timeSetForAlarm - 900000,300000,pendingIntent);
 
                             Map<String,Object> map = new HashMap<>();
                             map.put("task",taskText.getText().toString());

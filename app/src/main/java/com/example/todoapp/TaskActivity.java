@@ -225,7 +225,8 @@ public class TaskActivity extends AppCompatActivity {
                             model.setTask(taskText.getText().toString());
                             AlarmManager alm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                             Intent intent = new Intent(getApplicationContext(), AlertReceiver.class);
-                            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                            //PendingIntent.FLAG_UPDATE_CURRENT
+                            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, 0);
 
                             String dateFormat = model.getDate();
                             String[] splitedDate = dateFormat.split("-");

@@ -19,6 +19,7 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
+import androidx.legacy.content.WakefulBroadcastReceiver;
 
 import com.example.todoapp.Model.ToDoModel;
 import com.google.firebase.database.DatabaseReference;
@@ -31,8 +32,6 @@ public class AlertReceiver extends BroadcastReceiver {
     public static final String channelName = "Channel Name";
     private NotificationManager mManager;
     ToDoModel model;
-    FirebaseDatabase rootNode;
-    DatabaseReference reference;
 
 
     @Override
@@ -45,9 +44,7 @@ public class AlertReceiver extends BroadcastReceiver {
                 mManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             }
             mManager.createNotificationChannel(channel);
-
-
-
+            
             Intent i = new Intent(context, RingtonePlayingService.class);
             context.startService(i);
 

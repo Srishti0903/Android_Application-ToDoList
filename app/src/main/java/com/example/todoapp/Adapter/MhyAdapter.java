@@ -293,9 +293,10 @@ public class MhyAdapter extends FirebaseRecyclerAdapter<ToDoModel,MhyAdapter.myv
                         {
                             AlarmManager alm = (AlarmManager) holder.date.getContext().getSystemService(Context.ALARM_SERVICE);
                             Intent intent = new Intent(holder.date.getContext().getApplicationContext(), AlertReceiver.class);
-                           // PendingIntent pendingIntent1 = PendingIntent.getBroadcast(holder.date.getContext().getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                            PendingIntent pendingIntent = PendingIntent.getBroadcast(holder.date.getContext().getApplicationContext(), 1, intent, 0);
-                           // alm.cancel(pendingIntent1);
+                            PendingIntent pendingIntent1 = PendingIntent.getBroadcast(holder.date.getContext().getApplicationContext(), 0, intent, 0);
+                            alm.cancel(pendingIntent1);
+
+                            PendingIntent pendingIntent = PendingIntent.getBroadcast(holder.date.getContext().getApplicationContext(), 0, intent, 0);
 
                             String dateFormat = model.getDate();
                             String [] splitedDate = dateFormat.split("-");
